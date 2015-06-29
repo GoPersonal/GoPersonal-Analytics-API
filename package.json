@@ -1,0 +1,11 @@
+{
+  "name": "gopersonal-analytics-api",
+  "main": "server.js",
+  "dependencies": {
+    "async": "^1.2.1",
+    "aws-sdk": "^2.1.36",
+    "body-parser": "~1.0.1",
+    "express": "~4.0.0",
+    "socket.io": "^1.3.5"
+  }
+}
