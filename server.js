@@ -28,7 +28,7 @@ io.on('connection', function (socket) {
 		//console.log('LastKey=' + data.LastKey);
 		var msg = data;
     	var params = {
-		  TableName: 'PageEvents',
+		  TableName: 'SessionEvents',
 		  KeyConditions: {
 		    SessionID: {
 		      ComparisonOperator: 'EQ', /* required */
