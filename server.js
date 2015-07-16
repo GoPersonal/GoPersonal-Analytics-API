@@ -23,6 +23,57 @@ app.get('/', function (req, res) {
 
 io.on('connection', function (socket) {
 	socket.emit('connection', { status: 'connected' });
+	socket.on('get pageviews', function (data) {
+		//console.log('data=' + data);
+		//console.log('LastKey=' + data.LastKey);
+		var msg = data;
+    	var params = {
+		  TableName: 'SitePageviews',
+		  KeyConditions: {
+		    SiteID: {
+		      ComparisonOperator: 'EQ', /* required */
+		      AttributeValueList: [
+		        { /* AttributeValue */
+		          S: msg.SiteID
+		        }
+		        /* more items */
+		      ]
+		    },
+		    TimeStamp: {
+		      ComparisonOperator: 'EQ', /* required */
+		      AttributeValueList: [
+		        { /* AttributeValue */
+		          N: msg.LastKey
+		        }
+		        /* more items */
+		      ]
+		    }
+		    /* anotherKey: ... */
+		  }
+		};
+		dynamodb.query(params, function(err, data) {
+			if (err) {
+		  		console.log(err, err.stack); // an error occurred
+		  	}
+		  	else {
+		  		var pageViews = 0;
+		  		if (data.Count>0)
+		  		{
+		  			console.log()
+		  			for(var i=0;i<data.Count;i++)
+		  			{
+		  				pageViews += parseInt(data.Items[i].PageViews.N);
+		  			}
+		  		}
+		  		
+		  		// Get Pageviews Response
+	  			socket.emit('gpr', JSON.stringify({
+	  				PageViews : pageViews
+	  			}));
+		  	}
+		});  
+  	});
+
 	socket.on('next event', function (data) {
 		//console.log('data=' + data);
 		//console.log('LastKey=' + data.LastKey);
@@ -61,7 +112,6 @@ io.on('connection', function (socket) {
 		  		var LastKey = msg.LastKey;
 		  		if (data.Count>0)
 		  		{
-		  			var eventList = [];
 		  			for(var i=0;i<data.Count;i++)
 		  			{
 		  				eventList.push(JSON.parse(data.Items[i].Data.S));
